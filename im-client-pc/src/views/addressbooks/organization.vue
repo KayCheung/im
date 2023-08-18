@@ -6,42 +6,45 @@
                 <p>组织架构</p>
             </el-header>
             <el-main class="panel-body no-padding lum-scrollbar">
-                <template v-if="status == 0">
-                    <Loading />
-                </template>
-                <template v-if="status == 1">
+                <template v-if="loadStatus && deptNavs.length > 0">
                     <div class="navigation">
                         <div v-for="(dept, index) in deptNavs">
-                            <el-button type="text" size="mini" :disabled="index == deptNavs.length - 1" 
-                                @click="changeDepartment(dept, index)">{{ dept.name}}</el-button>
-                            <span v-if="index < deptNavs.length - 1" class="el-icon-arrow-right"/>
+                            <el-button type="text" size="mini" :disabled="index == deptNavs.length - 1"
+                                @click="changeDepartment(dept, index)">{{ dept.name }}</el-button>
+                            <span v-if="index < deptNavs.length - 1" class="el-icon-arrow-right" />
                         </div>
                     </div>
-                    <div v-for="(dept, index) in department.departments" :key="dept.id" class="data-item"
+                    <div v-for="(dept, index) in deptNavs[deptNavs.length - 1].departments" :key="dept.id" class="data-item"
                         @click="loadSubordinate(dept)">
                         <el-avatar class="avatar" shape="square" :size="35" :src="dept.avatar">
                             {{ dept.name.substr(0, 1) }}
                         </el-avatar>
                         <div class="title">
                             <span>
-                                {{ dept.name }}({{ dept.user_count }})
+                                {{ dept.name }}({{ dept.staffCount }})
                             </span>
                         </div>
                         <div class="subordinate">
                             <el-button type="text" size="mini">下级</el-button>
                         </div>
                     </div>
-                    <div v-for="(user, index) in department.users" :key="user.id" class="data-item"
-                        @click="touser(user, index)">
-                        <el-avatar class="avatar" shape="square" :size="35" :src="user.avatar">
-                            {{ user.name.substr(user.name.length - 2, user.name.length) }}
+                    <div v-for="(staff, index) in deptNavs[deptNavs.length - 1].staffs" :key="staff.id" class="data-item"
+                        @click="touser(staff, index)">
+                        <el-avatar class="avatar" shape="square" :size="35" :src="staff.avatar">
+                            {{ staff.name.substr(staff.name.length - 2, staff.name.length) }}
                         </el-avatar>
                         <div class="title">
                             <span>
-                                {{ user.name }}
+                                {{ staff.name }}
                             </span>
                         </div>
                     </div>
+                </template>
+                <template v-else-if="loadStatus && deptNavs.length == 0">
+                    <Empty />
+                </template>
+                <template v-else>
+                    <Loading />
                 </template>
             </el-main>
         </el-container>
@@ -49,7 +52,7 @@
 </template>
   
 <script>
-import { GetAddressBooksApi } from '@/api/address-book'
+import { mapState } from 'vuex'
 import Empty from '@/components/global/Empty'
 import Loading from '@/components/global/Loading'
 import { toTalk } from '@/utils/talk'
@@ -59,37 +62,25 @@ export default {
         Empty,
         Loading,
     },
-    data() {
-        return {
-            deptNavs: [],
-            department: {},
-            status: 0,
-        }
-    },
-    created() {
-        this.loadOrganization()
+    computed: {
+        ...mapState({
+            loadStatus: state => state.organization.loadStatus,
+            deptNavs: state => state.organization.deptNavs,
+        })
     },
     methods: {
-        // 加载好友列表
-        loadOrganization() {
-            GetAddressBooksApi().then(res => {
-                if (res.code == '200') {
-                    this.department = res.data
-                    this.deptNavs.push(this.department)
-                    this.status = 1
-                }
-            })
-        },
 
         loadSubordinate(dept) {
-            this.deptNavs.push(dept)
-            this.department = dept
+            this.$store.commit('ADD_DEPT_NAVS', dept)
         },
 
         changeDepartment(dept, index) {
-            console.log(index)
-            this.deptNavs.splice(index + 1);
-            this.department = dept
+            this.$store.commit('DEL_DEPT_NAVS', index);
+            if (this.$route.path == '/address/books/team/members') {
+                this.$router.push({
+                    path: '/address/books/organization',
+                })
+            }
         },
 
         // 查看用户名片

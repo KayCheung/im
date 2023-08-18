@@ -18,13 +18,13 @@ class WsSocket {
   config = {
     heartbeat: {
       setInterval: null,
-      pingInterval: 20000,
-      pingTimeout: 60000,
+      pingInterval: 15000,
+      pingTimeout: 20000,
     },
     reconnect: {
       lockReconnect: false,
       setTimeout: null, // 计时器对象
-      time: 5000, // 重连间隔时间
+      time: 3000, // 重连间隔时间
       number: 1000, // 重连次数
     },
   }
@@ -58,6 +58,7 @@ class WsSocket {
     this.events = Object.assign({}, this.defaultEvent, events)
 
     this.on('connect', data => {
+      console.log('连接成功：', data);
       this.config.heartbeat.pingInterval = data.ping_interval * 1000
       this.config.heartbeat.pingTimeout = data.ping_timeout * 1000
     })

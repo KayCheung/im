@@ -9,7 +9,7 @@ export default {
   components: {},
   props: {
     value: {
-      type: String,
+      type: Number,
     },
   },
   watch: {
@@ -33,7 +33,7 @@ export default {
     setTime() {
       this.time = beautifyTime(this.value)
       let time = new Date().getTime()
-      let inTime = new Date(this.value.replace(/-/g, '/')).getTime()
+      let inTime = new Date(this.value).getTime()
 
       clearInterval(this.timeout)
 

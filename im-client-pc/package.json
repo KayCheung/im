@@ -15,6 +15,7 @@
   "dependencies": {
     "axios": "^0.21.2",
     "babel-plugin-prismjs": "^2.0.1",
+    "chromedriver": "^115.0.0",
     "core-js": "^3.6.5",
     "element-ui": "^2.14.1",
     "js-audio-recorder": "^1.0.6",
@@ -77,5 +78,6 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "__npminstall_done": false
 }

@@ -397,20 +397,14 @@ export function hidePhone(phone) {
 /**
  * 人性化显示时间
  *
- * @param {Object} datetime
+ * @param {Number} datetime
  */
-export function beautifyTime(datetime = '') {
+export function beautifyTime(datetime) {
   if (datetime == null) {
     return ''
   }
-
-  datetime = datetime.replace(/-/g, '/')
-
   let time = new Date()
   let outTime = new Date(datetime)
-  if (/^[1-9]\d*$/.test(datetime)) {
-    outTime = new Date(parseInt(datetime) * 1000)
-  }
 
   if (time.getTime() < outTime.getTime()) {
     return parseTime(outTime, '{y}/{m}/{d}')
